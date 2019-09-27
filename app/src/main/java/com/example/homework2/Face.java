@@ -1,3 +1,10 @@
+/*
+*   @author:Keisha Ching
+*   Class: CS 301
+*   Homework 2
+*   Date: 10/01/2019
+*
+ */
 package com.example.homework2;
 
 import android.graphics.Canvas;
