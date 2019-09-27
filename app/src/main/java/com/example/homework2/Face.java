@@ -14,21 +14,34 @@ import android.view.View;
 
 public class Face extends SurfaceView{
 
-    int skinColor;
-    int eyeColor;
-    int hairColor;
-    int hairStyle=0;
-    int redColor=150;
-    int blueColor=150;
-    int greenColor=150;
-    int userColor;
+    //used to change color of face and hairstyle
+    protected int skinColor;
+    protected int eyeColor;
+    protected int hairColor;
+    protected int hairStyle;
+
+    //used to create custom color
+    public int redColor;
+    public int blueColor;
+    public int greenColor;
+
+    //used to check which radio button is clicked
     public boolean hairChecked = false;
     public boolean eyesChecked = false;
     public boolean skinChecked = false;
 
-    Paint paint = new Paint();
-    Random random = new Random();
+    //used to create different colors for face
+    protected Paint paint = new Paint();
+    protected Paint eyeOutline = new Paint();
+    protected Paint noseColor = new Paint();
+    protected Paint mouthColor = new Paint();
+    protected Paint eyeWhite = new Paint();
+    protected Paint finalSkinColor = new Paint();
+    protected Paint finalEyeColor = new Paint();
+    protected Paint finalHairColor = new Paint();
+    protected Random random = new Random();
 
+    //used for creating face graphics
     public float radius=100;
     public float eyeRadius = 100;
     public float innerEyeRadius = 75;
@@ -40,15 +53,24 @@ public class Face extends SurfaceView{
     {
         super(context, attrs);
         setWillNotDraw(false);
-        userColor = Color.rgb(redColor, greenColor, blueColor);
+        this.randomize();   //starts face at random
+        this.eyeOutline.setColor(Color.BLACK);
+        this.noseColor.setColor(0XFF543A0B);
+        this.mouthColor.setColor(0XFF543A0B);
+        this.eyeWhite.setColor(Color.WHITE);
     }
 
+    //sets random color to skin, eyes, and hair, with random hair style
     public void randomize()
     {
-        skinColor = random.nextInt(256);
-        eyeColor = random.nextInt(256);
-        hairColor = random.nextInt(256);
+        //https://stackoverflow.com/questions/5280367/android-generate-random-color-on-click
+        skinColor = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        eyeColor = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        hairColor = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
         hairStyle = random.nextInt(3);
+        hairChecked = false;
+        eyesChecked = false;
+        skinChecked = false;
     }
 
     public void onDraw(Canvas canvas)
@@ -58,11 +80,11 @@ public class Face extends SurfaceView{
         drawHair(canvas);
     }
 
+    //draws the basic shape of the face with nose and mouth
     public void drawBasicFace(Canvas canvas)
     {
         float width = (float) getWidth();
         float height = (float) getHeight();
-
 
         if (width > height) {
             radius = height / 4;
@@ -70,26 +92,30 @@ public class Face extends SurfaceView{
             radius = width / 4;
         }
 
-        //draw face shape
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(0xFFDEC48B);
-        RectF oval1 = new RectF(width/8, height/8, width - width/8, height - height/8);
-        canvas.drawOval(oval1, paint);
+        //checks if skin button is clicked
+        if(skinChecked == true) {
+            if(redColor != 0 || greenColor != 0 || blueColor != 0) {
+                skinColor = (Color.rgb(redColor, greenColor, blueColor));
+            }
+        }
+        this.finalSkinColor.setColor(skinColor);
 
+        //draw face shape
+        //paint.setStyle(Paint.Style.FILL);
+        //paint.setColor(skinColor);
+        RectF oval1 = new RectF(width/8, height/8, width - width/8, height - height/8);
+        canvas.drawOval(oval1, finalSkinColor);
 
         //draw mouth
+        //https://stackoverflow.com/questions/31705870/how-to-draw-a-half-circle-in-android
         Path path = new Path();
         path.addCircle(width / 3,
                 height / 3, radius,
                 Path.Direction.CW);
 
-        paint.setColor(0XFF543A0B);
-        paint.setStrokeWidth(20);
-        paint.setStyle(Paint.Style.FILL);
-
         float center_x, center_y;
         final RectF oval = new RectF();
-        paint.setStyle(Paint.Style.FILL);
+        //.setStyle(Paint.Style.FILL);
 
         center_x = width / 2;
         center_y = height / 2 + height / 13;
@@ -98,32 +124,49 @@ public class Face extends SurfaceView{
                 center_y - radius,
                 center_x + radius,
                 center_y + radius);
-        canvas.drawArc(oval, 30, 120, false, paint);
-
-        paint.setColor(Color.WHITE);
-        paint.setStyle(Paint.Style.FILL);
-        //canvas.drawArc(oval, 20, 140, false, paint);
+        canvas.drawArc(oval, 30, 120, false, mouthColor);
 
         //draw nose
-        //paint.setStrokeWidth(10);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(0XFF543A0B);
-        canvas.drawCircle(width/2-30,height/2+100,noseRadius,paint);
-        canvas.drawCircle(width/2+30,height/2+100,noseRadius,paint);
+        canvas.drawCircle(width/2-30,height/2+100,noseRadius,noseColor);
+        canvas.drawCircle(width/2+30,height/2+100,noseRadius,noseColor);
 
     }
 
+    //draws hair with three different options depending on which options is picked from spinner
     public void drawHair(Canvas canvas)
     {
-
+        if(hairChecked == true) {
+            if(redColor != 0 || greenColor != 0 || blueColor != 0) {
+                hairColor = (Color.rgb(redColor, greenColor, blueColor));
+            }
+        }
+        this.finalHairColor.setColor(hairColor);
 
         float width = (float) getWidth();
         float height = (float) getHeight();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(userColor); //NEED TO CHANGE
+        //paint.setStyle(Paint.Style.FILL);
+        //paint.setColor(hairColor);
 
         switch(hairStyle){
             case 0:
+                canvas.drawCircle(2*(width/8)-50,height/4,hairRadius,finalHairColor);
+                canvas.drawCircle(3*(width/8)-50,height/5-50,hairRadius,finalHairColor);
+                canvas.drawCircle(4*(width/8),height/6-50,hairRadius,finalHairColor);
+                canvas.drawCircle(5*(width/8)+50,height/5-50,hairRadius,finalHairColor);
+                canvas.drawCircle(6*(width/8)+50,height/4,hairRadius,finalHairColor);
+                break;
+
+            case 1:
+                RectF oval2 = new RectF(width/20, height/8, 5*(width/20), 5*(height/8));
+                canvas.drawOval(oval2, finalHairColor);
+                RectF oval3 = new RectF(width-5*(width/20), height/8, width-(width/20), 5*(height/8));
+                canvas.drawOval(oval3,finalHairColor);
+                RectF oval4 = new RectF(width/10, height/15, width-(width/10), 4*(height/15));
+                canvas.drawOval(oval4,finalHairColor);
+                break;
+
+            case 2:
+                //https://stackoverflow.com/questions/31705870/how-to-draw-a-half-circle-in-android
                 Path path = new Path();
                 path.addCircle(width / 3, height / 3, radius, Path.Direction.CW);
                 paint.setStrokeWidth(20);
@@ -135,46 +178,35 @@ public class Face extends SurfaceView{
 
                 oval.set(center_x - radius-100, center_y - radius, center_x + radius+100,
                         center_y + radius);
-                canvas.drawArc(oval, 185, 170, false, paint);
-                break;
-
-            case 1:
-                canvas.drawCircle(2*(width/8)-50,height/4,hairRadius,paint);
-                canvas.drawCircle(3*(width/8)-50,height/5-50,hairRadius,paint);
-                canvas.drawCircle(4*(width/8),height/6-50,hairRadius,paint);
-                canvas.drawCircle(5*(width/8)+50,height/5-50,hairRadius,paint);
-                canvas.drawCircle(6*(width/8)+50,height/4,hairRadius,paint);
-                break;
-
-            case 2:
-                RectF oval2 = new RectF(width/20, height/8, 5*(width/20), 5*(height/8));
-                canvas.drawOval(oval2, paint);
-                RectF oval3 = new RectF(width-5*(width/20), height/8, width-(width/20), 5*(height/8));
-                canvas.drawOval(oval3,paint);
-                RectF oval4 = new RectF(width/10, height/15, width-(width/10), 4*(height/15));
-                canvas.drawOval(oval4,paint);
+                canvas.drawArc(oval, 185, 170, false, finalHairColor);
                 break;
         }
     }
 
+    //draws eyes with different color depending on slider bar
     public void drawEyes(Canvas canvas)
     {
+        if(eyesChecked == true) {
+            if(redColor != 0 || greenColor != 0 || blueColor != 0) {
+                eyeColor = (Color.rgb(redColor, greenColor, blueColor));
+            }
+        }
+        this.finalEyeColor.setColor(eyeColor);
+
         float width = (float) getWidth();
         float height = (float) getHeight();
-        paint.setStrokeWidth(10);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLACK);
-        canvas.drawCircle(width/2-150, height/4+200,eyeRadius,paint);
-        canvas.drawCircle(width/2+150,height/4+200,eyeRadius,paint);
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.WHITE);
-        canvas.drawCircle(width/2-150,height/4+200,eyeRadius,paint);
-        canvas.drawCircle(width/2+150,height/4+200,eyeRadius,paint);
-        paint.setColor(userColor); //color of the eye NEED TO CHANGE
-        canvas.drawCircle(width/2-150,height/4+200,innerEyeRadius,paint);
-        canvas.drawCircle(width/2+150,height/4+200,innerEyeRadius,paint);
-        paint.setColor(Color.BLACK);
-        canvas.drawCircle(width/2-150,height/4+200,pupilRadius,paint);
-        canvas.drawCircle(width/2+150,height/4+200,pupilRadius,paint);
+        eyeOutline.setStrokeWidth(10);
+        eyeOutline.setStyle(Paint.Style.STROKE);
+        canvas.drawCircle(width/2-150, height/4+200,eyeRadius,eyeOutline);
+        canvas.drawCircle(width/2+150,height/4+200,eyeRadius,eyeOutline);
+        canvas.drawCircle(width/2-150,height/4+200,eyeRadius,eyeWhite);
+        canvas.drawCircle(width/2+150,height/4+200,eyeRadius,eyeWhite);
+        //paint.setStyle(Paint.Style.FILL);
+        //paint.setColor(eyeColor);
+        canvas.drawCircle(width/2-150,height/4+200,innerEyeRadius, finalEyeColor);
+        canvas.drawCircle(width/2+150,height/4+200,innerEyeRadius, finalEyeColor);
+        eyeOutline.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(width/2-150,height/4+200,pupilRadius,eyeOutline);
+        canvas.drawCircle(width/2+150,height/4+200,pupilRadius,eyeOutline);
     }
 }
