@@ -11,13 +11,11 @@ import android.graphics.Canvas;
 import java.util.Random;
 import android.content.Context;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.view.SurfaceView;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.View;
 
 public class Face extends SurfaceView{
 
@@ -70,10 +68,23 @@ public class Face extends SurfaceView{
     //sets random color to skin, eyes, and hair, with random hair style
     public void randomize()
     {
-        //https://stackoverflow.com/questions/5280367/android-generate-random-color-on-click
-        skinColor = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        eyeColor = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-        hairColor = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        /*
+        External Citation
+        Date: 25 September 2019
+        Problem: Did not know how to generate random color
+
+        Resource:
+        https://stackoverflow.com/questions/5280367/
+        android-generate-random-color-on-click
+        Solution: I used the example code from this post.
+        */
+
+        skinColor = Color.argb(255, random.nextInt(256),
+                random.nextInt(256), random.nextInt(256));
+        eyeColor = Color.argb(255, random.nextInt(256),
+                random.nextInt(256), random.nextInt(256));
+        hairColor = Color.argb(255, random.nextInt(256),
+                random.nextInt(256), random.nextInt(256));
         hairStyle = random.nextInt(3);
         hairChecked = false;
         eyesChecked = false;
@@ -108,29 +119,33 @@ public class Face extends SurfaceView{
         this.finalSkinColor.setColor(skinColor);
 
         //draw face shape
-        //paint.setStyle(Paint.Style.FILL);
-        //paint.setColor(skinColor);
-        RectF oval1 = new RectF(width/8, height/8, width - width/8, height - height/8);
+        RectF oval1 = new RectF(width/8, height/8,
+                width - width/8, height - height/8);
         canvas.drawOval(oval1, finalSkinColor);
 
         //draw mouth
-        //https://stackoverflow.com/questions/31705870/how-to-draw-a-half-circle-in-android
+
+        /*
+        External Citation
+        Date: 25 September 2019
+        Problem: Did not know how to create a half circle
+
+        Resource:
+        https://stackoverflow.com/questions/31705870/how-to-draw-a-half-circle-in-android
+        Solution: I used the example code from this post.
+        */
+
         Path path = new Path();
-        path.addCircle(width / 3,
-                height / 3, radius,
-                Path.Direction.CW);
+        path.addCircle(width / 3, height / 3, radius, Path.Direction.CW);
 
         float center_x, center_y;
         final RectF oval = new RectF();
-        //.setStyle(Paint.Style.FILL);
 
         center_x = width / 2;
         center_y = height / 2 + height / 13;
 
-        oval.set(center_x - radius,
-                center_y - radius,
-                center_x + radius,
-                center_y + radius);
+        oval.set(center_x - radius, center_y - radius,
+                center_x + radius, center_y + radius);
         canvas.drawArc(oval, 30, 120, false, mouthColor);
 
         //draw nose
@@ -151,8 +166,6 @@ public class Face extends SurfaceView{
 
         float width = (float) getWidth();
         float height = (float) getHeight();
-        //paint.setStyle(Paint.Style.FILL);
-        //paint.setColor(hairColor);
 
         switch(hairStyle){
             case 0:
@@ -173,7 +186,6 @@ public class Face extends SurfaceView{
                 break;
 
             case 2:
-                //https://stackoverflow.com/questions/31705870/how-to-draw-a-half-circle-in-android
                 Path path = new Path();
                 path.addCircle(width / 3, height / 3, radius, Path.Direction.CW);
                 paint.setStrokeWidth(20);
@@ -194,7 +206,8 @@ public class Face extends SurfaceView{
     public void drawEyes(Canvas canvas)
     {
         if(eyesChecked == true) {
-            if(redColor != 0 || greenColor != 0 || blueColor != 0) {
+            if(redColor != 0 || greenColor != 0 || blueColor != 0)
+            {
                 eyeColor = (Color.rgb(redColor, greenColor, blueColor));
             }
         }
@@ -208,8 +221,6 @@ public class Face extends SurfaceView{
         canvas.drawCircle(width/2+150,height/4+200,eyeRadius,eyeOutline);
         canvas.drawCircle(width/2-150,height/4+200,eyeRadius,eyeWhite);
         canvas.drawCircle(width/2+150,height/4+200,eyeRadius,eyeWhite);
-        //paint.setStyle(Paint.Style.FILL);
-        //paint.setColor(eyeColor);
         canvas.drawCircle(width/2-150,height/4+200,innerEyeRadius, finalEyeColor);
         canvas.drawCircle(width/2+150,height/4+200,innerEyeRadius, finalEyeColor);
         eyeOutline.setStyle(Paint.Style.FILL);

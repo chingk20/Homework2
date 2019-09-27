@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
         SurfaceView guiFaceView = (SurfaceView) findViewById(R.id.surfaceView);
         FaceController guiFaceController = new FaceController((Face) guiFaceView);
-        //guiFaceView.setOnTouchListener(guiFaceController);
 
         RadioButton hairButton = (RadioButton) findViewById(R.id.hairButton);
         hairButton.setOnClickListener(guiFaceController);
